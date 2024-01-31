@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 
 use dashmap::DashMap;
-use nrs_language_server::chumsky::{
-    parse, type_inference, Func, ImCompleteSemanticToken, ParserResult,
-};
-use nrs_language_server::completion::completion;
-use nrs_language_server::jump_definition::get_definition;
-use nrs_language_server::reference::get_reference;
-use nrs_language_server::semantic_token::{semantic_token_from_ast, LEGEND_TYPE};
+use novel_server::chumsky::{parse, type_inference, Func, ImCompleteSemanticToken, ParserResult};
+use novel_server::completion::completion;
+use novel_server::jump_definition::get_definition;
+use novel_server::reference::get_reference;
+use novel_server::semantic_token::{semantic_token_from_ast, LEGEND_TYPE};
 use ropey::Rope;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -304,12 +302,12 @@ impl LanguageServer for Backend {
                     k.start,
                     k.end,
                     match v {
-                        nrs_language_server::chumsky::Value::Null => "null".to_string(),
-                        nrs_language_server::chumsky::Value::Bool(_) => "bool".to_string(),
-                        nrs_language_server::chumsky::Value::Num(_) => "number".to_string(),
-                        nrs_language_server::chumsky::Value::Str(_) => "string".to_string(),
-                        nrs_language_server::chumsky::Value::List(_) => "[]".to_string(),
-                        nrs_language_server::chumsky::Value::Func(_) => v.to_string(),
+                        novel_server::chumsky::Value::Null => "null".to_string(),
+                        novel_server::chumsky::Value::Bool(_) => "bool".to_string(),
+                        novel_server::chumsky::Value::Num(_) => "number".to_string(),
+                        novel_server::chumsky::Value::Str(_) => "string".to_string(),
+                        novel_server::chumsky::Value::List(_) => "[]".to_string(),
+                        novel_server::chumsky::Value::Func(_) => v.to_string(),
                     },
                 )
             })
@@ -356,7 +354,7 @@ impl LanguageServer for Backend {
             let mut ret = Vec::with_capacity(completions.len());
             for (_, item) in completions {
                 match item {
-                    nrs_language_server::completion::ImCompleteCompletionItem::Variable(var) => {
+                    novel_server::completion::ImCompleteCompletionItem::Variable(var) => {
                         ret.push(CompletionItem {
                             label: var.clone(),
                             insert_text: Some(var.clone()),
@@ -365,10 +363,7 @@ impl LanguageServer for Backend {
                             ..Default::default()
                         });
                     }
-                    nrs_language_server::completion::ImCompleteCompletionItem::Function(
-                        name,
-                        args,
-                    ) => {
+                    novel_server::completion::ImCompleteCompletionItem::Function(name, args) => {
                         ret.push(CompletionItem {
                             label: name.clone(),
                             kind: Some(CompletionItemKind::FUNCTION),
